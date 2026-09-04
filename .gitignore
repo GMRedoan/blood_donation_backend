@@ -1,0 +1,7 @@
+node_modules
+.env
+.vercel
+dist
+generated
+/generated/prisma
+/generated/prisma
