@@ -1,0 +1,57 @@
+model BloodRequest {
+  id            String        @id @default(uuid())
+  creatorId     String
+  creator       User          @relation("RequestCreator", fields: [creatorId], references: [id])
+  requesterType RequesterType @default(INDIVIDUAL)
+  patientName   String
+  bloodGroup    BloodGroup
+  unitsNeeded   Int
+  hospitalName  String?
+  city          String
+  area          String?
+  urgency       String        @default("normal") // normal | urgent | critical
+  status        RequestStatus @default(PENDING)
+  verifiedById  String?
+  verifier      User?         @relation("RequestVerifier", fields: [verifiedById], references: [id])
+  verifiedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  matches   DonorMatch[]
+  donations Donation[]
+  campaign  Campaign?
+
+  @@index([status])
+  @@index([bloodGroup, city])
+}
+
+model DonorMatch {
+  id          String       @id @default(uuid())
+  requestId   String
+  request     BloodRequest @relation(fields: [requestId], references: [id])
+  donorId     String
+  donor       User         @relation("MatchedDonor", fields: [donorId], references: [id])
+  status      MatchStatus  @default(PENDING)
+  notifiedAt  DateTime     @default(now())
+  respondedAt DateTime?
+  createdAt   DateTime     @default(now())
+
+  @@unique([requestId, donorId])
+  @@index([status])
+}
+
+model Donation {
+  id          String         @id @default(uuid())
+  requestId   String
+  request     BloodRequest   @relation(fields: [requestId], references: [id])
+  donorId     String
+  donor       User           @relation("DonationDonor", fields: [donorId], references: [id])
+  status      DonationStatus @default(SCHEDULED)
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+  deletedAt   DateTime?
+
+  @@index([status])
+}

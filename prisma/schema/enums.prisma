@@ -1,0 +1,56 @@
+enum Role {
+  ADMIN
+  PATIENT
+  DONOR
+}
+
+enum RequesterType {
+  INDIVIDUAL
+  HOSPITAL
+}
+
+enum BloodGroup {
+  A_POS
+  A_NEG
+  B_POS
+  B_NEG
+  AB_POS
+  AB_NEG
+  O_POS
+  O_NEG
+}
+
+enum RequestStatus {
+  PENDING
+  VERIFIED
+  MATCHING
+  FULFILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum MatchStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum DonationStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum CampaignStatus {
+  ACTIVE
+  CLOSED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
