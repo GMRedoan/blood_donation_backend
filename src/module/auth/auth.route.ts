@@ -9,4 +9,6 @@ router.post(
   authController.createUser,
 );
 
-export const authRoute = router;
+router.post("/verify-email", authController.verifyEmail);
+
+export const authRouter = router;

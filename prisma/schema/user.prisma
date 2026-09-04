@@ -11,6 +11,7 @@ model User {
   isVerifiedOrg Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
 
   donorProfile  DonorProfile?
