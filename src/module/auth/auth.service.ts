@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ICreateUser, ILoginUser, IVerifyEmail } from "./auth.interface";
+import { ICreateUser, ILoginUser, IUpdateUserPayload, IVerifyEmail } from "./auth.interface";
 import httpStatus from "http-status";
 import config from "../../config";
 import crypto from "crypto";
@@ -134,49 +134,6 @@ const verifyEmail = async (payload: IVerifyEmail) => {
   };
 };
 
-const createDonorProfile = async (
-  userId: string,
-  payload: {
-    bloodGroup: BloodGroup;
-  },
-) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  if (user.isDeleted) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Deleted user cannot create donor profile",
-    );
-  }
-
-  const existingProfile = await prisma.donorProfile.findUnique({
-    where: {
-      userId,
-    },
-  });
-
-  if (existingProfile) {
-    throw new AppError(httpStatus.CONFLICT, "Donor profile already exists");
-  }
-
-  const donorProfile = await prisma.donorProfile.create({
-    data: {
-      userId,
-      bloodGroup: payload.bloodGroup,
-    },
-  });
-
-  return donorProfile;
-};
-
 const loginUser = async (payload: ILoginUser) => {
   const { email, password } = payload;
   const user = await prisma.user.findUnique({
@@ -235,9 +192,58 @@ const loginUser = async (payload: ILoginUser) => {
   };
 };
 
+const getMyProfile = async (userId: string) => {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    include: {
+      donorProfile: true,
+    },
+    omit: {
+      password: true,
+    },
+  });
+
+  return user;
+};
+
+const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found");
+  }
+  if (user.isDeleted ===  true) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "user is deleted, please contact support",
+    );
+  }
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    include: {
+      donorProfile: true,
+    },
+    omit: {
+      password: true,
+    },
+    data: {
+      ...payload,
+    },
+  });
+  return updatedUser;
+};
+
 export const authService = {
     createUserIntoDB,
     verifyEmail,
     loginUser,
-    createDonorProfile,
+    getMyProfile,
+    updateUser,
 };

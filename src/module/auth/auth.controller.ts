@@ -42,18 +42,6 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const createDonorProfile = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  const userId = req.user.id;
-  const result = await authService.createDonorProfile(userId, payload);
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "donor profile created successfully",
-    data: result,
-  });
-});
-
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const { accessToken, refreshToken } = await authService.loginUser(payload);
@@ -77,10 +65,35 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     data: { accessToken, refreshToken },
   });
 });
+
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const profile = await authService.getMyProfile(userId as string);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "user retrieved successfully",
+    data: { profile },
+  });
+});
+
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const userId = req.user?.id;
+  const user = await authService.updateUser(payload, userId as string);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "user updated successfully",
+    data: { user },
+  });
+});
+
  
 export const authController = {
   createUser,
   verifyEmail,
-  createDonorProfile,
   loginUser,
+  getMe,
+  updateUser,
 };

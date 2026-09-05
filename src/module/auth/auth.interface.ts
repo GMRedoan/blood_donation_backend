@@ -15,6 +15,13 @@ export interface IVerifyEmail {
 }
 
 export interface ILoginUser {
-    email: string
-    password: string
+  email: string;
+  password: string;
+}
+
+export interface IUpdateUserPayload {
+  name?: string;
+  phone?: string;
+  city?: string;
+  area?: string;
 }

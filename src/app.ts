@@ -4,6 +4,8 @@ import cors from "cors";
 import { globalError } from "./middleware/globalError";
 import { notFound } from "./middleware/notFound";
 import { authRouter } from "./module/auth/auth.route";
+import { donorRouter } from "./module/donor/donor.route";
+import { requestRouter } from "./module/request/request.route";
 
 const app: Application = express();
 const allowedOrigins = [
@@ -27,6 +29,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/donor", donorRouter);
+app.use("/api/v1/request", requestRouter);
 
 app.use(globalError);
 app.use(notFound);
