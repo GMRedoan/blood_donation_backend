@@ -13,3 +13,8 @@ export interface IVerifyEmail {
   email: string;
   otp: string;
 }
+
+export interface ILoginUser {
+    email: string
+    password: string
+}

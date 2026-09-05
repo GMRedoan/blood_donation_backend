@@ -41,8 +41,46 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
     data: { accessToken, refreshToken },
   });
 });
+
+const createDonorProfile = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const userId = req.user.id;
+  const result = await authService.createDonorProfile(userId, payload);
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "donor profile created successfully",
+    data: result,
+  });
+});
+
+const loginUser = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const { accessToken, refreshToken } = await authService.loginUser(payload);
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "user logged in successfully",
+    data: { accessToken, refreshToken },
+  });
+});
  
 export const authController = {
   createUser,
   verifyEmail,
+  createDonorProfile,
+  loginUser,
 };

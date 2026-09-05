@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ICreateUser, IVerifyEmail } from "./auth.interface";
+import { ICreateUser, ILoginUser, IVerifyEmail } from "./auth.interface";
 import httpStatus from "http-status";
 import config from "../../config";
 import crypto from "crypto";
@@ -11,6 +11,7 @@ import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodeMailer";
 import { SignOptions } from "jsonwebtoken";
 import { jwtUtils } from "../../utils/jwt";
+import { BloodGroup } from "../../../generated/prisma/browser";
 
 const createUserIntoDB = async (payload: ICreateUser) => {
   const { name, email, phone, password, role } = payload;
@@ -72,19 +73,6 @@ const createUserIntoDB = async (payload: ICreateUser) => {
 const verifyEmail = async (payload: IVerifyEmail) => {
   const email = payload.email;
   const otp = payload.otp;
-//   const isExist = await prisma.user.findUnique({
-//     where: { email },
-//   });
-//   if (isExist?.isEmailVerified === true) {
-//     throw new AppError(httpStatus.BAD_REQUEST, "user is already verified");
-//   }
-//   if (isExist?.isDeleted === true) {
-//     throw new AppError(
-//       httpStatus.BAD_REQUEST,
-//       "user is deleted, please contact support",
-//     );
-//   }
-
   const otpKey = `user-verification-otp:${email}`;
   const redisOtp = await redisClient.get(otpKey);
   if (!redisOtp) {
@@ -146,7 +134,110 @@ const verifyEmail = async (payload: IVerifyEmail) => {
   };
 };
 
+const createDonorProfile = async (
+  userId: string,
+  payload: {
+    bloodGroup: BloodGroup;
+  },
+) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (user.isDeleted) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Deleted user cannot create donor profile",
+    );
+  }
+
+  const existingProfile = await prisma.donorProfile.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (existingProfile) {
+    throw new AppError(httpStatus.CONFLICT, "Donor profile already exists");
+  }
+
+  const donorProfile = await prisma.donorProfile.create({
+    data: {
+      userId,
+      bloodGroup: payload.bloodGroup,
+    },
+  });
+
+  return donorProfile;
+};
+
+const loginUser = async (payload: ILoginUser) => {
+  const { email, password } = payload;
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found");
+  }
+
+  if (user.isDeleted === true) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "user account has been deleted, please contact support",
+    );
+  }
+  if (user.isEmailVerified === false) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "user is not verified, please verify your email",
+    );
+  }
+
+  const isPasswordMatched = await bcrypt.compare(
+    password,
+    user.password as string,
+  );
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "password not matched");
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    phone: user.phone,
+    email: user.email,
+    role: user.role,
+    isEmailVerified: user.isEmailVerified,
+  };
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_access_secret,
+    config.jwt_access_expires_in as SignOptions,
+  );
+
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in as SignOptions,
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
+
 export const authService = {
-  createUserIntoDB,
-  verifyEmail,
+    createUserIntoDB,
+    verifyEmail,
+    loginUser,
+    createDonorProfile,
 };
