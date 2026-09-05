@@ -9,7 +9,8 @@ model BloodRequest {
   hospitalName  String?
   city          String
   area          String?
-  urgency       String        @default("normal") // normal | urgent | critical
+  urgency       String        @default("normal")
+  reason        String
   status        RequestStatus @default(PENDING)
   verifiedById  String?
   verifier      User?         @relation("RequestVerifier", fields: [verifiedById], references: [id])

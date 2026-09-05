@@ -1,12 +1,15 @@
-import { BloodGroup, RequesterType } from "../../../generated/prisma/browser";
+import { BloodGroup, RequesterType, RequestStatus } from "../../../generated/prisma/browser";
 
-export interface ICreateRequestPayload {
-  creator: string;
-  requesterType: RequesterType;
-  patientName: string;
-  bloodGroup: BloodGroup;
-  unitsNeeded: number;
-  city: string;
-  area: string;
-  urgency: string;
+export interface IRequestFilters {
+  bloodGroup?: BloodGroup;
+  city?: string;
+  area?: string;
+  requesterType?: RequesterType;
+  urgency?: string;
+  status?: RequestStatus;
+  sortBy?: "createdAt" | "updatedAt" | "urgency" | "unitsNeeded";
+  sortOrder?: "asc" | "desc";
+  page?: number;
+  limit?: number;
 }
+

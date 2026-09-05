@@ -5,7 +5,16 @@ import { auth } from "../../middleware/auth";
 
 const router = Router();
 
-router.post("/", auth(Role.PATIENT), 
-requestController.createRequest);
+router.get(
+  "/",
+  auth(Role.ADMIN, Role.PATIENT, Role.DONOR),
+  requestController.getAllRequest,
+);
+
+router.get(
+  "/:id",
+  auth(Role.ADMIN, Role.PATIENT, Role.DONOR),
+  requestController.getRequestById,
+);
 
 export const requestRouter = router;
