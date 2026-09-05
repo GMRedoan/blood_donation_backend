@@ -12,3 +12,16 @@ export interface ICreateRequestPayload {
   urgency: string;
 }
 
+export interface IUpdateRequestPayload {
+  requesterType?: RequesterType;
+  patientName?: string;
+  bloodGroup?: BloodGroup;
+  unitsNeeded?: number;
+  hospitalName?: string;
+  reason?: string;
+  city?: string;
+  area?: string;
+  urgency?: string;
+}
+
+

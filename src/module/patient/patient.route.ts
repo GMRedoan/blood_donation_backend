@@ -20,4 +20,16 @@ router.get(
   patientController.getMyRequest,
 );
 
+router.patch(
+  "/myRequest/:requestId",
+  auth(Role.PATIENT),
+  patientController.updateRequest,
+);
+
+router.delete(
+  "/myRequest/:requestId",
+  auth(Role.PATIENT),
+  patientController.deleteRequest,
+);
+
 export const patientRouter = router;

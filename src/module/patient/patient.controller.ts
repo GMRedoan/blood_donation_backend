@@ -27,7 +27,38 @@ const getMyRequest = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateRequest = catchAsync(async (req: Request, res: Response) => {
+  const requestId = req.params.requestId;
+  const payload = req.body;
+  const userId = req.user?.id;
+  const updatedRequest = await patientService.updateRequest(
+    requestId as string,
+    payload,
+    userId as string,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "request updated successfully",
+    data: updatedRequest,
+  });
+});
+
+const deleteRequest = catchAsync(async (req: Request, res: Response) => {
+  const requestId = req.params.requestId;
+  const userId = req.user?.id;
+  await patientService.deleteRequest(requestId as string, userId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "request deleted successfully",
+    data: null,
+  });
+});
+
 export const patientController = {
   createRequest,
   getMyRequest,
+  updateRequest,
+  deleteRequest,
 };
