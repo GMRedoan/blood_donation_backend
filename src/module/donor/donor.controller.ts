@@ -32,7 +32,34 @@ const updateDonorProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getEligibility = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const result = await donorService.getEligibility(userId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Donor eligibility retrieved successfully",
+    data: result,
+  });
+});
+
+const getMatchingRequests = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+
+  const requests = await donorService.getMatchingRequests(userId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Matching blood requests retrieved successfully",
+    data: requests,
+  });
+});
+
 export const donorController = {
   createDonorProfile,
   updateDonorProfile,
+  getEligibility,
+  getMatchingRequests,
 };

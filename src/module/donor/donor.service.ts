@@ -91,7 +91,109 @@ const updateDonorProfile = async (
   return updatedDonorProfile;
 };
 
+const getEligibility = async (userId: string) => {
+  const donor = await prisma.donorProfile.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!donor) {
+    throw new AppError(404, "Donor profile not found");
+  }
+
+  const lastDonation = await prisma.donation.findFirst({
+    where: {
+      donorId: userId,
+      status: "COMPLETED",
+      completedAt: {
+        not: null,
+      },
+    },
+    orderBy: {
+      completedAt: "desc",
+    },
+  });
+
+  if (!lastDonation) {
+    return {
+      eligible: true,
+      lastDonationAt: null,
+      nextEligibleAt: null,
+    };
+  }
+
+  const nextEligibleAt = new Date(lastDonation.completedAt!);
+  nextEligibleAt.setMonth(nextEligibleAt.getMonth() + 3);
+
+  const eligible = new Date() >= nextEligibleAt;
+
+  return {
+    eligible,
+    lastDonationAt: lastDonation.completedAt,
+    nextEligibleAt,
+  };
+};
+
+const getMatchingRequests = async (userId: string) => {
+  const donor = await prisma.donorProfile.findUnique({
+    where: {
+      userId,
+    },
+    include: {
+       user: {
+        select: {
+          city: true,
+          area: true,
+        },
+      },
+    },
+  });
+
+  if (!donor) {
+    throw new AppError(404, "Donor profile not found");
+  }
+
+  const lastDonation = await prisma.donation.findFirst({
+    where: {
+      donorId: userId,
+      status: "COMPLETED",
+      completedAt: {
+        not: null,
+      },
+    },
+    orderBy: {
+      completedAt: "desc",
+    },
+  });
+
+  if (lastDonation?.completedAt) {
+    const nextEligibleAt = new Date(lastDonation.completedAt);
+    nextEligibleAt.setMonth(nextEligibleAt.getMonth() + 3);
+
+    if (new Date() < nextEligibleAt) {
+      return [];
+    }
+  }
+
+  const requests = await prisma.bloodRequest.findMany({
+    where: {
+      status: "PENDING",
+      bloodGroup: donor.bloodGroup,
+      city: donor.user.city || "",
+      deletedAt: null,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return requests;
+};
+
 export const donorService = {
-    createDonorProfile,
-    updateDonorProfile,
+  createDonorProfile,
+  updateDonorProfile,
+  getEligibility,
+  getMatchingRequests,
 };

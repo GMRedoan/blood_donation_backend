@@ -4,8 +4,8 @@ model User {
   password      String
   role          Role
   name          String
-  phone         String?
-  city          String?
+  phone         String
+  city          String
   area          String?
   isEmailVerified Boolean   @default(false)
   isVerifiedOrg Boolean   @default(false)

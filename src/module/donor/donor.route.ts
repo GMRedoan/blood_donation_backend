@@ -20,4 +20,15 @@ router.patch(
   donorController.updateDonorProfile,
 );
 
+router.get("/eligibility", 
+  auth(Role.DONOR), 
+  donorController.getEligibility);
+
+router.get(
+    "/matching-requests",
+    auth(Role.DONOR),
+    donorController.getMatchingRequests,
+  );
+
+
 export const donorRouter = router;
