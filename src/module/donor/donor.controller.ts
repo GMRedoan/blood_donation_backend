@@ -1,6 +1,5 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { authService } from "../auth/auth.service";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { donorService } from "./donor.service";
@@ -57,9 +56,24 @@ const getMatchingRequests = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const createDonation = catchAsync(async (req: Request, res: Response) => {
+  const { requestId } = req.body;
+  const donorId = req.user?.id;
+
+  const match = await donorService.createDonation(requestId, donorId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "You have successfully responded to this blood request",
+    data: match,
+  });
+});
+
 export const donorController = {
   createDonorProfile,
   updateDonorProfile,
   getEligibility,
   getMatchingRequests,
+  createDonation,
 };

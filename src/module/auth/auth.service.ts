@@ -11,10 +11,9 @@ import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodeMailer";
 import { SignOptions } from "jsonwebtoken";
 import { jwtUtils } from "../../utils/jwt";
-import { BloodGroup } from "../../../generated/prisma/browser";
 
 const createUserIntoDB = async (payload: ICreateUser) => {
-  const { name, email, phone, password, role } = payload;
+  const { name, email, phone, city, password, role } = payload;
   const isExist = await prisma.user.findUnique({
     where: {
       email, 
@@ -43,6 +42,7 @@ const createUserIntoDB = async (payload: ICreateUser) => {
     name,
     email,
     phone,
+    city,
     role,
     password: hashedPassword,
   };
@@ -96,6 +96,7 @@ const verifyEmail = async (payload: IVerifyEmail) => {
       name: userPayload.name,
       email: userPayload.email,
       phone: userPayload.phone,
+      city: userPayload.city,
       role: userPayload.role,
       password: userPayload.password,
       isEmailVerified: true,
@@ -112,6 +113,7 @@ const verifyEmail = async (payload: IVerifyEmail) => {
     id: createdUser.id,
     name: createdUser.name,
     phone: createdUser.phone,
+    city: createdUser.city,
     email: createdUser.email,
     role: createdUser.role,
     isEmailVerified: createdUser.isEmailVerified,

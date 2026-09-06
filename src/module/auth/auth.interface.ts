@@ -3,10 +3,10 @@ import { BloodGroup, Role } from "../../../generated/prisma/enums";
 export interface ICreateUser {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
+  city: string;
   password: string;
   role: Role;
-  bloodGroup?: BloodGroup;
 }
 
 export interface IVerifyEmail {

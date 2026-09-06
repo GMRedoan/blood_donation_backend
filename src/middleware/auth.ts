@@ -15,6 +15,7 @@ declare global {
         id: string;
         name: string;
         phone: string;
+        city: string;
         email: string;
         role: string;
       };
@@ -65,7 +66,8 @@ export const auth = (...requiredRole: Role[]) => {
     req.user = {
       id: user.id,
       name: user.name,
-      phone: user?.phone ?? "",
+      phone: user.phone,
+      city: user.city,
       email: user.email,
       role: user.role,
     };

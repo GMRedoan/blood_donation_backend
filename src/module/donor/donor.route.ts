@@ -22,13 +22,20 @@ router.patch(
 
 router.get("/eligibility", 
   auth(Role.DONOR), 
-  donorController.getEligibility);
+  donorController.getEligibility
+);
 
 router.get(
     "/matching-requests",
     auth(Role.DONOR),
     donorController.getMatchingRequests,
-  );
+);
+
+router.post(
+  "/create-donation",
+  auth(Role.DONOR),
+  donorController.createDonation,
+);
 
 
 export const donorRouter = router;

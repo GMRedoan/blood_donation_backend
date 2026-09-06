@@ -178,7 +178,7 @@ const getMatchingRequests = async (userId: string) => {
 
   const requests = await prisma.bloodRequest.findMany({
     where: {
-      status: "PENDING",
+      status: "VERIFIED",
       bloodGroup: donor.bloodGroup,
       city: donor.user.city || "",
       deletedAt: null,
@@ -191,9 +191,111 @@ const getMatchingRequests = async (userId: string) => {
   return requests;
 };
 
+const createDonation = async (requestId: string, donorId: string) => {
+  const donor = await prisma.donorProfile.findUnique({
+    where: {
+      userId: donorId,
+    },
+    include: {
+      user: {
+        select: {
+          city: true,
+          area: true,
+        },
+      },
+    },
+  });
+
+  if (!donor) {
+    throw new AppError(404, "Donor profile not found");
+  }
+
+  const lastDonation = await prisma.donation.findFirst({
+    where: {
+      donorId,
+      status: "COMPLETED",
+      completedAt: {
+        not: null,
+      },
+    },
+    orderBy: {
+      completedAt: "desc",
+    },
+  });
+
+  if (lastDonation?.completedAt) {
+    const nextEligibleAt = new Date(lastDonation.completedAt);
+
+    nextEligibleAt.setMonth(nextEligibleAt.getMonth() + 3);
+
+    if (new Date() < nextEligibleAt) {
+      throw new AppError(
+        400,
+        `You are not eligible to donate until ${nextEligibleAt.toISOString()}`,
+      );
+    }
+  }
+
+  const bloodRequest = await prisma.bloodRequest.findUnique({
+    where: {
+      id: requestId,
+    },
+  });
+
+  if (!bloodRequest) {
+    throw new AppError(404, "Blood request not found");
+  }
+
+  if (bloodRequest.status !== "VERIFIED") {
+    throw new AppError(400, "This blood request is no longer accepting donors");
+  }
+
+  if (bloodRequest.deletedAt) {
+    throw new AppError(400, "This blood request has been deleted");
+  }
+
+  if (donor.bloodGroup !== bloodRequest.bloodGroup) {
+    throw new AppError(
+      400,
+      "Your blood group is not compatible with this request",
+    );
+  }
+
+  if (donor.user.city !== bloodRequest.city) {
+    throw new AppError(
+      400,
+      "You are not in the required city for this request",
+    );
+  }
+
+  const existingMatch = await prisma.donorMatch.findUnique({
+    where: {
+      requestId_donorId: {
+        requestId,
+        donorId,
+      },
+    },
+  });
+
+  if (existingMatch) {
+    throw new AppError(400, "You have already responded to this blood request");
+  }
+
+  const match = await prisma.donorMatch.create({
+    data: {
+      requestId,
+      donorId,
+      status: "PENDING",
+    },
+  });
+
+  return match;
+};
+
 export const donorService = {
   createDonorProfile,
   updateDonorProfile,
   getEligibility,
   getMatchingRequests,
+  createDonation,
 };
