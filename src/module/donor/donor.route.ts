@@ -37,5 +37,11 @@ router.post(
   donorController.createDonation,
 );
 
+router.get(
+  "/create-donation/me",
+  auth(Role.DONOR),
+  donorController.myCreateDonation,
+);
+
 
 export const donorRouter = router;

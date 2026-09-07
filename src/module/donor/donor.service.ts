@@ -292,10 +292,24 @@ const createDonation = async (requestId: string, donorId: string) => {
   return match;
 };
 
+const myCreateDonation = async (donorId: string) => {
+  const donations = await prisma.donorMatch.findMany({
+    where: {
+      donorId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return donations;
+};
+
 export const donorService = {
   createDonorProfile,
   updateDonorProfile,
   getEligibility,
   getMatchingRequests,
   createDonation,
+  myCreateDonation,
 };

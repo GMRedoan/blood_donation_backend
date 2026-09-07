@@ -70,10 +70,24 @@ const createDonation = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const myCreateDonation = catchAsync(async (req: Request, res: Response) => {
+  const donorId = req.user?.id;
+
+  const match = await donorService.myCreateDonation( donorId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My created blood donation retrieved successfully",
+    data: match,
+  });
+});
+
 export const donorController = {
   createDonorProfile,
   updateDonorProfile,
   getEligibility,
   getMatchingRequests,
   createDonation,
+  myCreateDonation,
 };
