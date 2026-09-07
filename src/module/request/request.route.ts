@@ -17,4 +17,10 @@ router.get(
   requestController.getRequestById,
 );
 
+router.post(
+  "/matches/:id/accept",
+  auth(Role.PATIENT),
+  requestController.acceptMatch,
+);
+
 export const requestRouter = router;

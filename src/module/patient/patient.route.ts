@@ -32,16 +32,4 @@ router.delete(
   patientController.deleteRequest,
 );
 
-router.post(
-  "/matches/:id/accept",
-  auth(Role.PATIENT),
-  patientController.acceptMatch,
-);
-
-// router.patch(
-//   "/donations/:id/schedule",
-//   auth(Role.PATIENT),
-//   patientController.scheduleDonation,
-// );
-
 export const patientRouter = router;

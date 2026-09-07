@@ -51,7 +51,27 @@ const getRequestById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const acceptMatch = catchAsync(async (req: Request, res: Response) => {
+  const matchId = req.params.id;
+  const userId = req.user?.id;
+  const { scheduledAt } = req.body;
+
+  const result = await requestService.acceptMatch(
+    matchId as string,
+    userId,
+    scheduledAt,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Donor accepted and donation scheduled successfully",
+    data: result,
+  });
+});
+
 export const requestController = {
   getAllRequest,
   getRequestById,
+  acceptMatch,
 };
