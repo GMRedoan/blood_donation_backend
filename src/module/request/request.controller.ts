@@ -70,8 +70,24 @@ const acceptMatch = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const completeDonation = catchAsync(async (req: Request, res: Response) => {
+  const donationId = req.params.id;
+
+  const donation = await requestService.completeDonation(
+    donationId as string,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Donation completed successfully",
+    data: donation,
+  });
+});
+
 export const requestController = {
   getAllRequest,
   getRequestById,
   acceptMatch,
+  completeDonation,
 };

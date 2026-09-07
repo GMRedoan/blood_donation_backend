@@ -9,26 +9,26 @@ const router = Router();
 
 router.post(
   "/request",
-  auth(Role.PATIENT),
+  auth(Role.PATIENT, Role.HOSPITAL),
   validateRequest(RequestValidation.createRequestValidationSchema),
   patientController.createRequest,
 );
 
 router.get(
   "/myRequest",
-  auth(Role.PATIENT),
+  auth(Role.PATIENT, Role.HOSPITAL),
   patientController.getMyRequest,
 );
 
 router.patch(
   "/myRequest/:requestId",
-  auth(Role.PATIENT),
+  auth(Role.PATIENT, Role.HOSPITAL),
   patientController.updateRequest,
 );
 
 router.delete(
   "/myRequest/:requestId",
-  auth(Role.PATIENT),
+  auth(Role.PATIENT, Role.HOSPITAL),
   patientController.deleteRequest,
 );
 

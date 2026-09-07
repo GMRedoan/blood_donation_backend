@@ -8,7 +8,6 @@ model User {
   city          String
   area          String?
   isEmailVerified Boolean   @default(false)
-  isVerifiedOrg Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   isDeleted     Boolean   @default(false)
@@ -17,18 +16,13 @@ model User {
   donorProfile  DonorProfile?
   refreshTokens RefreshToken[]
 
-  volunteerAssignment VolunteerAssignment? @relation("VolunteerUser")
-  volunteerGrantsMade VolunteerAssignment[] @relation("VolunteerGrantedBy")
-
   bloodRequestsCreated BloodRequest[] @relation("RequestCreator")
   bloodRequestsVerified BloodRequest[] @relation("RequestVerifier")
   donorMatches          DonorMatch[]  @relation("MatchedDonor")
   donations             Donation[]    @relation("DonationDonor")
   campaignsCreated      Campaign[]    @relation("CampaignCreator")
   contributions         Contribution[]
-  notifications         Notification[]
-  auditLogs             AuditLog[]
-
+ 
   @@index([role])
   @@index([city, area])
 }
@@ -42,18 +36,4 @@ model RefreshToken {
   createdAt DateTime @default(now())
 
   @@index([userId])
-}
-
-model VolunteerAssignment {
-  id           String    @id @default(uuid())
-  userId       String    @unique
-  user         User      @relation("VolunteerUser", fields: [userId], references: [id])
-  assignedById String
-  assignedBy   User      @relation("VolunteerGrantedBy", fields: [assignedById], references: [id])
-  permissions  Json       
-  isActive     Boolean   @default(true)
-  assignedAt   DateTime  @default(now())
-  revokedAt    DateTime?
-
-  @@index([isActive])
 }

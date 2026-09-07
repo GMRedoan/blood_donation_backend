@@ -193,8 +193,70 @@ const acceptMatch = async (
   return result;
 };
 
+const completeDonation = async (donationId: string) => {
+  const donation = await prisma.donation.findUnique({
+    where: {
+      id: donationId,
+    },
+    include: {
+      request: true,
+    },
+  });
+
+  if (!donation) {
+    throw new AppError(404, "Donation not found");
+  }
+
+  if (donation.deletedAt) {
+    throw new AppError(400, "Donation has been deleted");
+  }
+
+  if (donation.status !== "SCHEDULED") {
+    throw new AppError(400, "Only scheduled donations can be completed");
+  }
+
+  if (!donation.scheduledAt) {
+    throw new AppError(400, "Donation has not been scheduled");
+  }
+
+  const completedAt = new Date();
+
+  const result = await prisma.$transaction(async (tx) => {
+    const updatedDonation = await tx.donation.update({
+      where: {
+        id: donationId,
+      },
+      data: {
+        status: "COMPLETED",
+        completedAt,
+      },
+    });
+
+    const updatedDonorProfile = await tx.donorProfile.update({
+      where: {
+        userId: donation.donorId,
+      },
+      data: {
+        lastDonationDate: completedAt,
+        totalDonations: {
+          increment: 1,
+        },
+        isAvailable: false,
+      },
+    });
+
+    return {
+      donation: updatedDonation,
+      donorProfile: updatedDonorProfile,
+    };
+  });
+
+  return result;
+};
+
 export const requestService = {
   getAllRequest,
   getRequestById,
   acceptMatch,
+  completeDonation,
 };

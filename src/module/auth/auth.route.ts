@@ -16,12 +16,12 @@ router.post("/verify-email", authController.verifyEmail);
 router.post("/login", authController.loginUser);
 router.get(
   "/me",
-  auth(Role.ADMIN, Role.PATIENT, Role.DONOR),
+  auth(Role.ADMIN, Role.PATIENT, Role.DONOR, Role.HOSPITAL),
   authController.getMe,
 );
 router.patch(
   "/me",
-  auth(Role.ADMIN, Role.PATIENT, Role.DONOR),
+  auth(Role.ADMIN, Role.PATIENT, Role.DONOR, Role.HOSPITAL),
   authController.updateUser,
 );
 
