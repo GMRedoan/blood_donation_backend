@@ -192,7 +192,13 @@ const contributionHistory = async () => {
       },
       include: {
         campaign: true,
-        contributor: true,
+        contributor: {
+          select: {
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
       },
     });
   

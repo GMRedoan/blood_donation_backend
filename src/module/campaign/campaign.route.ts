@@ -16,8 +16,19 @@ router.get("/",
     auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
     campaignController.getAllCampaigns);
     
-router.get("/:id",
-    auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
-    campaignController.getCampaignById);
+router.get("/myCampaign",
+    auth(Role.ADMIN, Role.HOSPITAL),
+    campaignController.getMyCampaign);
+
+router.get("/contribution/history/:id",
+    auth(Role.ADMIN, Role.HOSPITAL),
+    campaignController.getCampaignContributionHistory
+)
+
+router.get(
+  "/:id",
+  auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
+  campaignController.getCampaignById,
+);
 
 export const campaignRouter = router;

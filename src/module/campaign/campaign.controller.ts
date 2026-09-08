@@ -42,8 +42,33 @@ const getCampaignById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyCampaign = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const campaign = await campaignService.getMyCampaign(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Campaign fetched successfully",
+    data: campaign,
+  });
+})
+
+const getCampaignContributionHistory = catchAsync(async (req: Request, res: Response) => {
+  const campaignId = req.params.id;
+  const userId = req.user?.id;
+  const campaign = await campaignService.getCampaignContributionHistory(campaignId as string, userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Campaign fetched successfully",
+    data: campaign,
+  });
+})
+
 export const campaignController = {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
+  getMyCampaign,
+  getCampaignContributionHistory
 };

@@ -72,8 +72,60 @@ const getCampaignById = async (campaignId: string) => {
   return campaign;
 };
 
+const getMyCampaign = async (userId: string) => {
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      createdById: userId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return campaigns;
+}
+
+const getCampaignContributionHistory = async (campaignId: string, userId: string) => {
+  const campaign = await prisma.campaign.findUnique({
+    where: {
+      id: campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new AppError(404, "Campaign not found");
+  }
+
+  if (campaign.deletedAt) {
+    throw new AppError(400, "Campaign has been deleted");
+  }
+
+  if (campaign.createdById !== userId) {
+    throw new AppError(403, "You are not authorized to view this campaign");
+  }
+
+  const contributions = await prisma.contribution.findMany({
+    where: {
+      campaignId: campaignId,
+    },
+    include: {
+      contributor:{
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        }
+      },
+    },
+  });   
+
+  return contributions;
+}
+
 export const campaignService = {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
+  getMyCampaign,
+  getCampaignContributionHistory
 };
