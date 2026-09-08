@@ -1,0 +1,926 @@
+{
+  "info": {
+    "_postman_id": "5ec4ca67-c83f-4a34-8860-e07dbb9b9505",
+    "name": "Blood Donation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50279989"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Registration",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Rifat\",\n    \"email\": \"redoangazi69@gmail.com\",\n    \"password\": \"Redu123#\",\n    \"role\": \"PATIENT\",\n    \"phone\": \"01764108600\",\n    \"city\": \"Cumilla\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/auth/register",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify-email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"redoangazi69@gmail.com\",\n    \"otp\": \"327496\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/auth/verify-email",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "verify-email"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"redoangazi69@gmail.com\",\n    \"password\": \"Redu123#\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/auth/login",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "My-profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/auth/me",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update-user",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"city\": \"dhaka\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/auth/me",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Donor",
+      "item": [
+        {
+          "name": "update-donor-profile",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bloodGroup\": \"B_POS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/donor-profile/me",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "donor-profile",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Donor-profile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bloodGroup\": \"AB_POS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/donor-profile",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "donor-profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "donor eligiblyty",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/eligibility",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "matching request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/matching-requests",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "matching-requests"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create donation",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"requestId\": \"1864931f-8b92-46e3-a299-70d6e9a70c92\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/create-donation",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "create-donation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my creating donation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/donor/create-donation/me",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "donor",
+                "create-donation",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Blood Request",
+      "item": [
+        {
+          "name": "all blood request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/request",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request"
+              ],
+              "query": [
+                {
+                  "key": "bloodGroup",
+                  "value": "A_NEG",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "2",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "request by Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/request/58d406ad-82ac-475c-9c38-cd916414de19",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request",
+                "58d406ad-82ac-475c-9c38-cd916414de19"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Accept match requests",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduledAt\": \"2026-09-15T10:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/request/matches/58d406ad-82ac-475c-9c38-cd916414de19/accept",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request",
+                "matches",
+                "58d406ad-82ac-475c-9c38-cd916414de19",
+                "accept"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "complete donation",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/request/donations/320ad7a5-c025-4535-99be-6df7581718e9/complete",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "request",
+                "donations",
+                "320ad7a5-c025-4535-99be-6df7581718e9",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Patient",
+      "item": [
+        {
+          "name": "create-request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"requesterType\": \"INDIVIDUAL\",\n  \"patientName\": \"Toriq\",\n  \"bloodGroup\": \"B_POS\",\n  \"unitsNeeded\": 1,\n  \"city\": \"dhaka\",\n  \"area\": \"Mirpur\",\n  \"reason\": \"wfwefnjfnje\",\n  \"urgency\": \"normal\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/patient/request",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patient",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/patient/myRequest",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patient",
+                "myRequest"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientName\": \"Titu\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/patient/myRequest/0dc6df88-d115-416a-9f5c-e21739efbb8a",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patient",
+                "myRequest",
+                "0dc6df88-d115-416a-9f5c-e21739efbb8a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete request",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/patient/myRequest/5bc028e2-38c0-4325-950d-0bb1e839330a",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patient",
+                "myRequest",
+                "5bc028e2-38c0-4325-950d-0bb1e839330a"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "verify blood request",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/admin/request/verify/0dc6df88-d115-416a-9f5c-e21739efbb8a",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "request",
+                "verify",
+                "0dc6df88-d115-416a-9f5c-e21739efbb8a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify campaign",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/admin/campaign/verify/1f6a96e5-044e-48b2-92c7-b9f77d23b876",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "campaign",
+                "verify",
+                "1f6a96e5-044e-48b2-92c7-b9f77d23b876"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/admin/users",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/admin/user/72760705-c699-4c91-b68b-dcd80b2d2f93/delete",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "72760705-c699-4c91-b68b-dcd80b2d2f93",
+                "delete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restore user",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/admin/user/72760705-c699-4c91-b68b-dcd80b2d2f93/restore",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "user",
+                "72760705-c699-4c91-b68b-dcd80b2d2f93",
+                "restore"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Campaign",
+      "item": [
+        {
+          "name": "create campaign",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Help New Born Babies\",\n  \"description\": \"Fundraising campaign for...\",\n  \"targetAmount\": 200000\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/campaign",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all campaign",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/campaign",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "single campaign",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/campaign/b231dd05-8de6-4046-bc39-3deb5fa05338",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign",
+                "b231dd05-8de6-4046-bc39-3deb5fa05338"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "campaign contribution history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/campaign/contribution/history/c934df0e-15ea-45a6-9992-8683a3bf9eb0",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign",
+                "contribution",
+                "history",
+                "c934df0e-15ea-45a6-9992-8683a3bf9eb0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my campaign",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/campaign/myCampaign",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "campaign",
+                "myCampaign"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contribution",
+      "item": [
+        {
+          "name": "create contribution",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"campaignId\": \"c934df0e-15ea-45a6-9992-8683a3bf9eb0\",\n    \"amount\": 3000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/contribution/create",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contribution",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all contribution history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/contribution/history",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contribution",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my contribution history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://blood-donation-eight-ivory.vercel.app/api/v1/contribution/history/me",
+              "protocol": "https",
+              "host": [
+                "blood-donation-eight-ivory",
+                "vercel",
+                "app"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contribution",
+                "history",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

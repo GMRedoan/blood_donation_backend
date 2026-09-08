@@ -11,7 +11,7 @@
     "start": "node dist/server.js",
     "build": "tsup",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "stripe:webhook": "stripe listen --forward-to http://localhost:3000/api/v1/contribution/confirm"
+    "stripe:webhook": "stripe listen --forward-to https://blood-donation-eight-ivory.vercel.app/api/v1/contribution/confirm"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
