@@ -13,4 +13,8 @@ router.patch("/campaign/verify/:id",
     auth(Role.ADMIN),
     adminController.verifyCampaign);
 
+router.get("/users", 
+    auth(Role.ADMIN),
+     adminController.getAllUsers);
+
 export const adminRouter = router;

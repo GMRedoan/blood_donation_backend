@@ -19,7 +19,8 @@ const verifyRequest = catchAsync(async (req: Request, res: Response) => {
 
 const verifyCampaign = catchAsync(async (req: Request, res: Response) => {
   const campaignId = req.params.id;
-  const result = await adminService.verifyCampaign(campaignId as string);
+  const status = req.body.status;
+  const result = await adminService.verifyCampaign(campaignId as string, status);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -29,7 +30,18 @@ const verifyCampaign = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  const users = await adminService.getAllUsers();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users fetched successfully",
+    data: users,
+  });
+});
+
 export const adminController = {
   verifyRequest,
   verifyCampaign,
+  getAllUsers,
 };

@@ -1,3 +1,4 @@
+import { CampaignStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 
@@ -30,7 +31,7 @@ const verifyRequest = async (requestId: string, userId: string) => {
   return updatedRequest;
 };
 
-const verifyCampaign = async (campaignId: string) => {
+const verifyCampaign = async (campaignId: string, status: CampaignStatus) => {
   const campaign = await prisma.campaign.findUnique({
     where: {
       id: campaignId,
@@ -54,14 +55,34 @@ const verifyCampaign = async (campaignId: string) => {
       id: campaignId,
     },
     data: {
-      status: "ACTIVE",
+      status: status
     },
   });
 
   return updatedCampaign;
 };
 
+const getAllUsers = async () => {
+  const users = await prisma.user.findMany({
+    where: {
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      isDeleted: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return users;
+};
+
 export const adminService = {
   verifyRequest,
   verifyCampaign,
+  getAllUsers,  
 };
