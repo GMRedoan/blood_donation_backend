@@ -8,6 +8,7 @@ import { donorRouter } from "./module/donor/donor.route";
 import { requestRouter } from "./module/request/request.route";
 import { patientRouter } from "./module/patient/patient.route";
 import { adminRouter } from "./module/admin/admin.route";
+import { campaignRouter } from "./module/campaign/campaign.route";
 
 const app: Application = express();
 const allowedOrigins = [
@@ -35,6 +36,7 @@ app.use("/api/v1/donor", donorRouter);
 app.use("/api/v1/request", requestRouter);
 app.use("/api/v1/patient", patientRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/campaign", campaignRouter);
 
 app.use(globalError);
 app.use(notFound);

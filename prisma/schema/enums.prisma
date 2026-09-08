@@ -47,6 +47,7 @@ enum CampaignStatus {
   ACTIVE
   CLOSED
   CANCELLED
+  PENDING
 }
 
 enum PaymentStatus {
