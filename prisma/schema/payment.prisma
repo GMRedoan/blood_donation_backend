@@ -6,10 +6,10 @@ model Campaign {
   createdBy    User           @relation("CampaignCreator", fields: [createdById], references: [id])
   title        String
   description  String
-  targetAmount Int            
+  targetAmount Int
   raisedAmount Int            @default(0)
-  status       CampaignStatus 
-  createdAt    DateTime       @default(now()) 
+  status       CampaignStatus
+  createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   deletedAt    DateTime?
 
@@ -19,16 +19,17 @@ model Campaign {
 }
 
 model Contribution {
-  id                    String        @id @default(uuid())
-  campaignId            String
-  campaign              Campaign      @relation(fields: [campaignId], references: [id])
-  contributorId         String
-  contributor           User          @relation(fields: [contributorId], references: [id])
-  amount                Int
-  stripePaymentIntentId String?       @unique
-  status                PaymentStatus @default(PENDING)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  id                      String        @id @default(uuid())
+  campaignId              String
+  campaign                Campaign      @relation(fields: [campaignId], references: [id])
+  contributorId           String
+  contributor             User          @relation(fields: [contributorId], references: [id])
+  amount                  Int
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId   String?       @unique
+  status                  PaymentStatus @default(PENDING)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
 
   @@index([status])
 }
