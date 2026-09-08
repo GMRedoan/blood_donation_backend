@@ -17,4 +17,12 @@ router.get("/users",
     auth(Role.ADMIN),
      adminController.getAllUsers);
 
+router.patch("/user/:id/delete", 
+    auth(Role.ADMIN),
+    adminController.softDeleteUser);
+
+router.patch("/user/:id/restore", 
+    auth(Role.ADMIN),
+    adminController.restoreUser);
+
 export const adminRouter = router;

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ICreateUser, ILoginUser, IUpdateUserPayload, IVerifyEmail } from "./auth.interface";
+import { ICreateUser, IGoogleLoginPayload, ILoginUser, IUpdateUserPayload, IVerifyEmail } from "./auth.interface";
 import httpStatus from "http-status";
 import config from "../../config";
 import crypto from "crypto";
@@ -11,6 +11,9 @@ import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodeMailer";
 import { SignOptions } from "jsonwebtoken";
 import { jwtUtils } from "../../utils/jwt";
+import { TokenPayload } from "google-auth-library";
+import { googleClient } from "../../lib/googleAuth";
+import { authProvider, Role } from "../../../generated/prisma/enums";
 
 const createUserIntoDB = async (payload: ICreateUser) => {
   const { name, email, phone, city, password, role } = payload;
@@ -210,6 +213,81 @@ const getMyProfile = async (userId: string) => {
   return user;
 };
 
+const googleLogin = async (payload: IGoogleLoginPayload) => {
+	let googleIdTokenPayload: TokenPayload | null | undefined = null;
+	try {
+		const ticket = await googleClient.verifyIdToken({
+			idToken: payload.idToken,
+			audience: config.google_client_id,
+		});
+
+		googleIdTokenPayload = ticket.getPayload();
+	} catch (error) {
+		console.log("Error verifying Google ID token:", error);
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+	}
+	if (!googleIdTokenPayload) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+	}
+	if (!googleIdTokenPayload.email) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+	}
+	if (!googleIdTokenPayload.name) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+	}
+	let user = await prisma.user.findUnique({
+		where: {
+			email: googleIdTokenPayload.email,
+		},
+	});
+
+	if (!user) {
+		user = await prisma.user.create({
+      data: {
+        email: googleIdTokenPayload.email,
+        name: googleIdTokenPayload.name,
+        role: Role.PATIENT,
+        googleId: googleIdTokenPayload.sub,
+        authProvider: authProvider.GOOGLE,
+        isEmailVerified: true,
+      },
+    });
+	}else if (!user.googleId) {
+    user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            googleId: googleIdTokenPayload.sub,
+        },
+    });
+}
+
+	const jwtPayload = {
+		id: user.id,
+		name: user.name,
+		email: user.email,
+        phone: user.phone ?? null,
+		role: user.role,
+        isEmailVerified: user.isEmailVerified
+	};
+
+	const accessToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_access_secret,
+		config.jwt_access_expires_in as SignOptions,
+	);
+
+	const refreshToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_refresh_secret,
+		config.jwt_refresh_expires_in as SignOptions,
+	);
+
+	return {
+		accessToken,
+		refreshToken,
+	};
+};
+
 const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -247,5 +325,6 @@ export const authService = {
     verifyEmail,
     loginUser,
     getMyProfile,
+    googleLogin,
     updateUser,
 };

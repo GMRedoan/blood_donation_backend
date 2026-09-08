@@ -40,8 +40,32 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const softDeleteUser = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const result = await adminService.softDeleteUser(userId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User deleted successfully",
+    data: result,
+  });
+});
+
+const restoreUser = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const result = await adminService.restoreUser(userId as string);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User restored successfully",
+    data: result,
+  });
+});
+
 export const adminController = {
   verifyRequest,
   verifyCampaign,
   getAllUsers,
+  softDeleteUser,
+  restoreUser
 };

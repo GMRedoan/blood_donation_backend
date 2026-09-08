@@ -25,3 +25,7 @@ export interface IUpdateUserPayload {
   city?: string;
   area?: string;
 }
+
+export interface IGoogleLoginPayload {
+  idToken: string;
+}

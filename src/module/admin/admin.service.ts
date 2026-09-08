@@ -64,9 +64,6 @@ const verifyCampaign = async (campaignId: string, status: CampaignStatus) => {
 
 const getAllUsers = async () => {
   const users = await prisma.user.findMany({
-    where: {
-      isDeleted: false,
-    },
     select: {
       id: true,
       name: true,
@@ -81,8 +78,72 @@ const getAllUsers = async () => {
   return users;
 };
 
+const softDeleteUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  if (user.isDeleted) {
+    throw new AppError(400, "User is already deleted"); 
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    omit: {
+      password: true,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+  });
+
+  return updatedUser;
+};
+
+const restoreUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(404, "User not found");
+  }
+
+  if (!user.isDeleted) {
+    throw new AppError(400, "User is not deleted");
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    omit: {
+      password: true,
+    },
+    data: {
+      isDeleted: false,
+      deletedAt: null,
+    },
+  });
+
+  return updatedUser;
+};
+
 export const adminService = {
   verifyRequest,
   verifyCampaign,
-  getAllUsers,  
+  getAllUsers, 
+  softDeleteUser,
+  restoreUser
 };

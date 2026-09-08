@@ -1,28 +1,30 @@
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  role          Role
-  name          String
-  phone         String
-  city          String
-  area          String?
-  isEmailVerified Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isDeleted     Boolean   @default(false)
-  deletedAt     DateTime?
+  id              String       @id @default(uuid())
+  email           String       @unique
+  password        String?
+  role            Role
+  name            String
+  phone           String?
+  city            String?
+  area            String?
+  isEmailVerified Boolean      @default(false)
+  authProvider    authProvider @default(CREDENTIAL)
+  googleId        String?      @unique
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  isDeleted       Boolean      @default(false)
+  deletedAt       DateTime?
 
   donorProfile  DonorProfile?
   refreshTokens RefreshToken[]
 
-  bloodRequestsCreated BloodRequest[] @relation("RequestCreator")
+  bloodRequestsCreated  BloodRequest[] @relation("RequestCreator")
   bloodRequestsVerified BloodRequest[] @relation("RequestVerifier")
-  donorMatches          DonorMatch[]  @relation("MatchedDonor")
-  donations             Donation[]    @relation("DonationDonor")
-  campaignsCreated      Campaign[]    @relation("CampaignCreator")
+  donorMatches          DonorMatch[]   @relation("MatchedDonor")
+  donations             Donation[]     @relation("DonationDonor")
+  campaignsCreated      Campaign[]     @relation("CampaignCreator")
   contributions         Contribution[]
- 
+
   @@index([role])
   @@index([city, area])
 }
