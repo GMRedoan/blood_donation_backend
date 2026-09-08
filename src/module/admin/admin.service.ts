@@ -30,6 +30,38 @@ const verifyRequest = async (requestId: string, userId: string) => {
   return updatedRequest;
 };
 
+const verifyCampaign = async (campaignId: string) => {
+  const campaign = await prisma.campaign.findUnique({
+    where: {
+      id: campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new AppError(404, "Campaign not found");
+  }
+
+  if (campaign.deletedAt) {
+    throw new AppError(400, "Campaign has been deleted");
+  }
+
+  if (campaign.status !== "PENDING") {
+    throw new AppError(400, "Only pending campaigns can be approved");
+  }
+
+  const updatedCampaign = await prisma.campaign.update({
+    where: {
+      id: campaignId,
+    },
+    data: {
+      status: "ACTIVE",
+    },
+  });
+
+  return updatedCampaign;
+};
+
 export const adminService = {
   verifyRequest,
+  verifyCampaign,
 };

@@ -9,4 +9,8 @@ router.patch("/request/verify/:requestId",
     auth(Role.ADMIN),
     adminController.verifyRequest);
 
+router.patch("/campaign/verify/:id",
+    auth(Role.ADMIN),
+    adminController.verifyCampaign);
+
 export const adminRouter = router;

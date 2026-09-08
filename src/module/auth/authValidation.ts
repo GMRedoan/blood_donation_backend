@@ -25,7 +25,7 @@ const createUserValidationSchema = z.object({
       )
       .optional(),
 
-    role: z.enum(["ADMIN", "PATIENT", "DONOR"], {
+    role: z.enum(["ADMIN", "PATIENT", "DONOR", "HOSPITAL"], {
       error: "Role must be ADMIN, PATIENT, or DONOR",
     }),
   }),

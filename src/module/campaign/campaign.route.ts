@@ -12,4 +12,12 @@ router.post("/",
      validateRequest(CampaignValidation.createCampaignValidationSchema),
      campaignController.createCampaign);
 
+router.get("/",
+    auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
+    campaignController.getAllCampaigns);
+    
+router.get("/:id",
+    auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
+    campaignController.getCampaignById);
+
 export const campaignRouter = router;

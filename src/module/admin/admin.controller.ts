@@ -17,6 +17,19 @@ const verifyRequest = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const verifyCampaign = catchAsync(async (req: Request, res: Response) => {
+  const campaignId = req.params.id;
+  const result = await adminService.verifyCampaign(campaignId as string);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Campaign verified successfully",
+    data: result,
+  });
+});
+
 export const adminController = {
   verifyRequest,
+  verifyCampaign,
 };

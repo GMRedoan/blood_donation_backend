@@ -40,6 +40,40 @@ const createCampaign = async (
   return campaign;
 };
 
+const getAllCampaigns = async () => {
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      status: "ACTIVE",
+      deletedAt: null,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return campaigns;
+};
+
+const getCampaignById = async (campaignId: string) => {
+  const campaign = await prisma.campaign.findUnique({
+    where: {
+      id: campaignId,
+    },
+  });
+
+  if (!campaign) {
+    throw new AppError(404, "Campaign not found");
+  }
+
+  if (campaign.deletedAt) {
+    throw new AppError(400, "Campaign has been deleted");
+  }
+
+  return campaign;
+};
+
 export const campaignService = {
   createCampaign,
+  getAllCampaigns,
+  getCampaignById,
 };
