@@ -6,6 +6,7 @@ export interface ICreateUser {
   phone: string;
   city: string;
   password: string;
+  profilePhoto: string;
   role: Role;
 }
 

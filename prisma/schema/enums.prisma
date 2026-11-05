@@ -1,8 +1,8 @@
 enum Role {
   ADMIN
   PATIENT
-  HOSPITAL
   DONOR
+  HOSPITAL
 }
 
 enum RequesterType {

@@ -1,29 +1,28 @@
 model User {
-  id              String       @id @default(uuid())
-  email           String       @unique
-  password        String?
-  role            Role
-  name            String
-  phone           String?
-  city            String?
-  area            String?
-  isEmailVerified Boolean      @default(false)
-  authProvider    authProvider @default(CREDENTIAL)
-  googleId        String?      @unique
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  isDeleted       Boolean      @default(false)
-  deletedAt       DateTime?
-
-  donorProfile  DonorProfile?
-  refreshTokens RefreshToken[]
-
+  id                    String         @id @default(uuid())
+  email                 String         @unique
+  password              String?
+  role                  Role
+  name                  String
+  phone                 String?
+  city                  String?
+  area                  String?
+  isEmailVerified       Boolean        @default(false)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  deletedAt             DateTime?
+  isDeleted             Boolean        @default(false)
+  authProvider          authProvider   @default(CREDENTIAL)
+  googleId              String?        @unique
+  profilePhoto          String?        @map("profilephoto")
   bloodRequestsCreated  BloodRequest[] @relation("RequestCreator")
   bloodRequestsVerified BloodRequest[] @relation("RequestVerifier")
-  donorMatches          DonorMatch[]   @relation("MatchedDonor")
-  donations             Donation[]     @relation("DonationDonor")
   campaignsCreated      Campaign[]     @relation("CampaignCreator")
   contributions         Contribution[]
+  donations             Donation[]     @relation("DonationDonor")
+  donorMatches          DonorMatch[]   @relation("MatchedDonor")
+  donorProfile          DonorProfile?
+  refreshTokens         RefreshToken[]
 
   @@index([role])
   @@index([city, area])
@@ -33,9 +32,9 @@ model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }

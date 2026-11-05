@@ -1,7 +1,6 @@
 model BloodRequest {
   id            String        @id @default(uuid())
   creatorId     String
-  creator       User          @relation("RequestCreator", fields: [creatorId], references: [id])
   requesterType RequesterType @default(INDIVIDUAL)
   patientName   String
   bloodGroup    BloodGroup
@@ -10,18 +9,18 @@ model BloodRequest {
   city          String
   area          String?
   urgency       String        @default("normal")
-  reason        String
   status        RequestStatus @default(PENDING)
   verifiedById  String?
-  verifier      User?         @relation("RequestVerifier", fields: [verifiedById], references: [id])
   verifiedAt    DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   deletedAt     DateTime?
-
-  matches   DonorMatch[]
-  donations Donation[]
-  campaign  Campaign?
+  reason        String
+  creator       User          @relation("RequestCreator", fields: [creatorId], references: [id])
+  verifier      User?         @relation("RequestVerifier", fields: [verifiedById], references: [id])
+  campaign      Campaign?
+  donations     Donation[]
+  matches       DonorMatch[]
 
   @@index([status])
   @@index([bloodGroup, city])
@@ -30,13 +29,13 @@ model BloodRequest {
 model DonorMatch {
   id          String       @id @default(uuid())
   requestId   String
-  request     BloodRequest @relation(fields: [requestId], references: [id])
   donorId     String
-  donor       User         @relation("MatchedDonor", fields: [donorId], references: [id])
   status      MatchStatus  @default(PENDING)
   notifiedAt  DateTime     @default(now())
   respondedAt DateTime?
   createdAt   DateTime     @default(now())
+  donor       User         @relation("MatchedDonor", fields: [donorId], references: [id])
+  request     BloodRequest @relation(fields: [requestId], references: [id])
 
   @@unique([requestId, donorId])
   @@index([status])
@@ -45,14 +44,14 @@ model DonorMatch {
 model Donation {
   id          String         @id @default(uuid())
   requestId   String
-  request     BloodRequest   @relation(fields: [requestId], references: [id])
   donorId     String
-  donor       User           @relation("DonationDonor", fields: [donorId], references: [id])
   status      DonationStatus @default(SCHEDULED)
   scheduledAt DateTime?
   completedAt DateTime?
   createdAt   DateTime       @default(now())
   deletedAt   DateTime?
+  donor       User           @relation("DonationDonor", fields: [donorId], references: [id])
+  request     BloodRequest   @relation(fields: [requestId], references: [id])
 
   @@index([status])
 }

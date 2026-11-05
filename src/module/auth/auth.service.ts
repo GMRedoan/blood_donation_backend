@@ -48,6 +48,7 @@ const createUserIntoDB = async (payload: ICreateUser) => {
     city,
     role,
     password: hashedPassword,
+    profilePhoto: "https://i.ibb.co.com/YBhK3Jjv/user-logo.png",
   };
   await redisClient.set(
     userRegistrationKey,
@@ -103,6 +104,7 @@ const verifyEmail = async (payload: IVerifyEmail) => {
       role: userPayload.role,
       password: userPayload.password,
       isEmailVerified: true,
+      profilePhoto: userPayload.profilePhoto,
     },
     omit: {
       password: true,
@@ -120,6 +122,7 @@ const verifyEmail = async (payload: IVerifyEmail) => {
     email: createdUser.email,
     role: createdUser.role,
     isEmailVerified: createdUser.isEmailVerified,
+    profilePhoto: createdUser.profilePhoto,
   };
   const accessToken = jwtUtils.createToken(
     jwtPayload,
