@@ -1,7 +1,13 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ICreateUser, IGoogleLoginPayload, ILoginUser, IUpdateUserPayload, IVerifyEmail } from "./auth.interface";
+import {
+  ICreateUser,
+  IGoogleLoginPayload,
+  ILoginUser,
+  IUpdateUserPayload,
+  IVerifyEmail,
+} from "./auth.interface";
 import httpStatus from "http-status";
 import config from "../../config";
 import crypto from "crypto";
@@ -19,7 +25,7 @@ const createUserIntoDB = async (payload: ICreateUser) => {
   const { name, email, phone, city, password, role } = payload;
   const isExist = await prisma.user.findUnique({
     where: {
-      email, 
+      email,
     },
   });
   if (isExist) {
@@ -217,35 +223,35 @@ const getMyProfile = async (userId: string) => {
 };
 
 const googleLogin = async (payload: IGoogleLoginPayload) => {
-	let googleIdTokenPayload: TokenPayload | null | undefined = null;
-	try {
-		const ticket = await googleClient.verifyIdToken({
-			idToken: payload.idToken,
-			audience: config.google_client_id,
-		});
+  let googleIdTokenPayload: TokenPayload | null | undefined = null;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: payload.idToken,
+      audience: config.google_client_id,
+    });
 
-		googleIdTokenPayload = ticket.getPayload();
-	} catch (error) {
-		console.log("Error verifying Google ID token:", error);
-		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
-	}
-	if (!googleIdTokenPayload) {
-		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
-	}
-	if (!googleIdTokenPayload.email) {
-		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
-	}
-	if (!googleIdTokenPayload.name) {
-		throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
-	}
-	let user = await prisma.user.findUnique({
-		where: {
-			email: googleIdTokenPayload.email,
-		},
-	});
+    googleIdTokenPayload = ticket.getPayload();
+  } catch (error) {
+    console.log("Error verifying Google ID token:", error);
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+  }
+  if (!googleIdTokenPayload) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+  }
+  if (!googleIdTokenPayload.email) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+  }
+  if (!googleIdTokenPayload.name) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google ID token");
+  }
+  let user = await prisma.user.findUnique({
+    where: {
+      email: googleIdTokenPayload.email,
+    },
+  });
 
-	if (!user) {
-		user = await prisma.user.create({
+  if (!user) {
+    user = await prisma.user.create({
       data: {
         email: googleIdTokenPayload.email,
         name: googleIdTokenPayload.name,
@@ -253,42 +259,44 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
         googleId: googleIdTokenPayload.sub,
         authProvider: authProvider.GOOGLE,
         isEmailVerified: true,
+        profilePhoto: googleIdTokenPayload.picture,
       },
     });
-	}else if (!user.googleId) {
+  } else if (!user.googleId) {
     user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-            googleId: googleIdTokenPayload.sub,
-        },
+      where: { id: user.id },
+      data: {
+        googleId: googleIdTokenPayload.sub,
+      },
     });
-}
+  }
 
-	const jwtPayload = {
-		id: user.id,
-		name: user.name,
-		email: user.email,
-        phone: user.phone ?? null,
-		role: user.role,
-        isEmailVerified: user.isEmailVerified
-	};
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone ?? null,
+    role: user.role,
+    isEmailVerified: user.isEmailVerified,
+    profilePhoto: user.profilePhoto,
+  };
 
-	const accessToken = jwtUtils.createToken(
-		jwtPayload,
-		config.jwt_access_secret,
-		config.jwt_access_expires_in as SignOptions,
-	);
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_access_secret,
+    config.jwt_access_expires_in as SignOptions,
+  );
 
-	const refreshToken = jwtUtils.createToken(
-		jwtPayload,
-		config.jwt_refresh_secret,
-		config.jwt_refresh_expires_in as SignOptions,
-	);
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in as SignOptions,
+  );
 
-	return {
-		accessToken,
-		refreshToken,
-	};
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
@@ -300,7 +308,7 @@ const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "user not found");
   }
-  if (user.isDeleted ===  true) {
+  if (user.isDeleted === true) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "user is deleted, please contact support",
@@ -324,10 +332,10 @@ const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
 };
 
 export const authService = {
-    createUserIntoDB,
-    verifyEmail,
-    loginUser,
-    getMyProfile,
-    googleLogin,
-    updateUser,
+  createUserIntoDB,
+  verifyEmail,
+  loginUser,
+  getMyProfile,
+  googleLogin,
+  updateUser,
 };
