@@ -61,3 +61,8 @@ enum authProvider {
   GOOGLE
   CREDENTIAL
 }
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+}

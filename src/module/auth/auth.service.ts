@@ -3,8 +3,10 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import {
   ICreateUser,
+  IForgotPasswordPayload,
   IGoogleLoginPayload,
   ILoginUser,
+  IResetPasswordPayload,
   IUpdateUserPayload,
   IVerifyEmail,
 } from "./auth.interface";
@@ -331,6 +333,119 @@ const updateUser = async (payload: IUpdateUserPayload, userId: string) => {
   return updatedUser;
 };
 
+const forgotPassword = async (payload: IForgotPasswordPayload) => {
+  const { email } = payload;
+  const isUserExists = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found");
+  }
+  if (!isUserExists.isEmailVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "user email is not verified");
+  }
+  if (isUserExists.status === "BANNED") {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "user is banned, please contact support",
+    );
+  }
+  if (isUserExists.googleId && isUserExists.authProvider === "GOOGLE") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "user is registered with google, please use google login",
+    );
+  }
+  const otp = crypto.randomInt(100000, 1000000).toString();
+  const key = `forgot-password-otp:${isUserExists.email}`;
+
+  await redisClient.set(key, otp, {
+    expiration: {
+      type: "EX",
+      value: 2 * 60,
+    },
+  });
+  const templatePath = path.join(
+    process.cwd(),
+    "src/template/forgot-password.ejs",
+  );
+  const html = await ejs.renderFile(templatePath, { otp });
+
+  await transporter.sendMail({
+    from: config.smtp_user,
+    to: email,
+    subject: "Forgot Password Otp",
+    html,
+  });
+};
+
+const resetPassword = async (payload: IResetPasswordPayload) => {
+  const { email, otp, newPassword } = payload;
+  const isUserExists = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  if (!isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "user not found");
+  }
+  if (!isUserExists.isEmailVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "user email is not verified");
+  }
+  if (isUserExists.status === "BANNED") {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "user is banned, please contact support",
+    );
+  }
+  if (isUserExists.googleId && isUserExists.authProvider === "GOOGLE") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "user is registered with google, please use google login",
+    );
+  }
+
+  const key = `forgot-password-otp:${isUserExists.email}`;
+  const redisOtp = await redisClient.get(key);
+
+  if (!redisOtp) {
+    throw new AppError(httpStatus.NOT_FOUND, "otp not found");
+  }
+  if (redisOtp !== otp) {
+    throw new AppError(httpStatus.BAD_REQUEST, "invalid otp");
+  }
+
+  const newHashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bycrypt_salt_rounds),
+  );
+  await prisma.user.update({
+    where: {
+      email: isUserExists.email,
+    },
+    data: {
+      password: newHashedPassword,
+    },
+  });
+
+  await redisClient.del([key]);
+
+  const templatePath = path.join(
+    process.cwd(),
+    "src/template/reset-passwordSuccess.ejs",
+  );
+  const html = await ejs.renderFile(templatePath);
+
+  await transporter.sendMail({
+    from: config.smtp_user,
+    to: email,
+    subject: "Password Reset Successfully",
+    html,
+  });
+};
+
 export const authService = {
   createUserIntoDB,
   verifyEmail,
@@ -338,4 +453,6 @@ export const authService = {
   getMyProfile,
   googleLogin,
   updateUser,
+  forgotPassword,
+  resetPassword,
 };

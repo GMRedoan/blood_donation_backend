@@ -1,4 +1,4 @@
-import { BloodGroup, Role } from "../../../generated/prisma/enums";
+import { Role } from "../../../generated/prisma/enums";
 
 export interface ICreateUser {
   name: string;
@@ -29,4 +29,14 @@ export interface IUpdateUserPayload {
 
 export interface IGoogleLoginPayload {
   idToken: string;
+}
+
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+export interface IResetPasswordPayload {
+  email: string;
+  newPassword: string;
+  otp: string;
 }

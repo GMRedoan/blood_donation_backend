@@ -117,6 +117,29 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const forgotPassword = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  await authService.forgotPassword(payload);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `A verification code has been sent to ${payload.email}`,
+    data: null,
+  });
+});
+
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  await authService.resetPassword(payload);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "password reset successfully",
+    data: null,
+  });
+});
  
 export const authController = {
   createUser,
@@ -125,4 +148,6 @@ export const authController = {
   getMe,
   googleLogin,
   updateUser,
+  forgotPassword,
+  resetPassword,
 };

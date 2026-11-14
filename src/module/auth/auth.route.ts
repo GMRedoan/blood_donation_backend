@@ -12,22 +12,25 @@ router.post(
   validateRequest(UserValidation.createUserValidationSchema),
   authController.createUser,
 );
-
 router.post("/verify-email", authController.verifyEmail);
-
 router.post("/login", authController.loginUser);
 router.get(
   "/me",
   auth(Role.ADMIN, Role.PATIENT, Role.DONOR, Role.HOSPITAL),
   authController.getMe,
 );
-
 router.post("/google", authController.googleLogin);
-
 router.patch(
   "/me",
   auth(Role.ADMIN, Role.PATIENT, Role.DONOR, Role.HOSPITAL),
   authController.updateUser,
 );
+router.post("/forgot-password", authController.forgotPassword);
+router.post(
+  "/reset-password",
+  validateRequest(UserValidation.resetPasswordSchema),
+  authController.resetPassword,
+);
+
 
 export const authRouter = router;

@@ -46,7 +46,23 @@ const createDonorProfileValidationSchema = z.object({
   }),
 });
 
+const resetPasswordSchema = z.object({
+  body: z.object({
+    email: z.string().email("Invalid email format"),
+    newPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).*$/,
+        "Password must contain uppercase, lowercase, number, and special character",
+      ),
+    otp: z.string().length(6, "OTP must be 6 digits"),
+  }),
+});
+
+
 export const UserValidation = {
-    createUserValidationSchema,
-    createDonorProfileValidationSchema,
+  createUserValidationSchema,
+  createDonorProfileValidationSchema,
+  resetPasswordSchema,
 };

@@ -12,6 +12,7 @@ model User {
   updatedAt             DateTime       @updatedAt
   deletedAt             DateTime?
   isDeleted             Boolean        @default(false)
+  status                UserStatus     @default(ACTIVE)
   authProvider          authProvider   @default(CREDENTIAL)
   googleId              String?        @unique
   profilePhoto          String?        @map("profilephoto")
