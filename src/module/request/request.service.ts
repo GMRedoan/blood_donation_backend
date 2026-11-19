@@ -192,14 +192,11 @@ const acceptMatch = async (
 
   return result;
 };
-
+ 
 const completeDonation = async (donationId: string) => {
   const donation = await prisma.donation.findUnique({
     where: {
       id: donationId,
-    },
-    include: {
-      request: true,
     },
   });
 
@@ -222,6 +219,20 @@ const completeDonation = async (donationId: string) => {
   const completedAt = new Date();
 
   const result = await prisma.$transaction(async (tx) => {
+    const currentDonation = await tx.donation.findUnique({
+      where: {
+        id: donationId,
+      },
+    });
+
+    if (
+      !currentDonation ||
+      currentDonation.deletedAt ||
+      currentDonation.status !== "SCHEDULED"
+    ) {
+      throw new AppError(400, "Donation is no longer available for completion");
+    }
+
     const updatedDonation = await tx.donation.update({
       where: {
         id: donationId,

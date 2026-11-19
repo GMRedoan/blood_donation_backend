@@ -136,59 +136,100 @@ const getEligibility = async (userId: string) => {
 };
 
 const getMatchingRequests = async (userId: string) => {
-  const donor = await prisma.donorProfile.findUnique({
-    where: {
-      userId,
-    },
-    include: {
-       user: {
-        select: {
-          city: true,
-          area: true,
+  try {
+    const donor = await prisma.donorProfile.findUnique({
+      where: {
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            city: true,
+            area: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  if (!donor) {
-    throw new AppError(404, "Donor profile not found");
-  }
-
-  const lastDonation = await prisma.donation.findFirst({
-    where: {
-      donorId: userId,
-      status: "COMPLETED",
-      completedAt: {
-        not: null,
-      },
-    },
-    orderBy: {
-      completedAt: "desc",
-    },
-  });
-
-  if (lastDonation?.completedAt) {
-    const nextEligibleAt = new Date(lastDonation.completedAt);
-    nextEligibleAt.setMonth(nextEligibleAt.getMonth() + 3);
-
-    if (new Date() < nextEligibleAt) {
+    if (!donor) {
+      throw new AppError(404, "Donor profile not found");
+    }
+    if (!donor.bloodGroup || !donor.user.city?.trim()) {
       return [];
     }
+    const lastDonation = await prisma.donation.findFirst({
+      where: {
+        donorId: userId,
+        status: "COMPLETED",
+        completedAt: {
+          not: null,
+        },
+      },
+      orderBy: {
+        completedAt: "desc",
+      },
+    });
+    if (lastDonation?.completedAt) {
+      const nextEligibleAt = new Date(lastDonation.completedAt);
+      nextEligibleAt.setMonth(nextEligibleAt.getMonth() + 3);
+
+      if (new Date() < nextEligibleAt) {
+        console.log("Donor is not eligible yet");
+        return [];
+      }
+    }
+
+    const existingMatches = await prisma.donorMatch.findMany({
+      where: {
+        donorId: userId,
+      },
+      select: {
+        id: true,
+        requestId: true,
+        status: true,
+      },
+    });
+    const respondedRequestIds = existingMatches.map((match) => match.requestId);
+    const testRequests = await prisma.bloodRequest.findMany({
+      where: {
+        status: "VERIFIED",
+        bloodGroup: donor.bloodGroup,
+        city: {
+          equals: donor.user.city.trim(),
+          mode: "insensitive",
+        },
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    const requests = await prisma.bloodRequest.findMany({
+      where: {
+        status: "VERIFIED",
+        bloodGroup: donor.bloodGroup,
+        city: {
+          equals: donor.user.city.trim(),
+          mode: "insensitive",
+        },
+        deletedAt: null,
+
+        ...(respondedRequestIds.length > 0 && {
+          id: {
+            notIn: respondedRequestIds,
+          },
+        }),
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return requests;
+  } catch (error) {
+    console.error("MATCHING REQUEST SERVICE ERROR:", error);
+    throw error;
   }
-
-  const requests = await prisma.bloodRequest.findMany({
-    where: {
-      status: "VERIFIED",
-      bloodGroup: donor.bloodGroup,
-      city: donor.user.city || "",
-      deletedAt: null,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return requests;
 };
 
 const createDonation = async (requestId: string, donorId: string) => {
@@ -297,7 +338,7 @@ const myCreateDonation = async (donorId: string) => {
     where: {
       donorId,
     },
-    orderBy: {
+    orderBy: { 
       createdAt: "desc",
     },
   });

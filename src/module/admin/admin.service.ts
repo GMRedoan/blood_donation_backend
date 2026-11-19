@@ -19,7 +19,7 @@ const verifyRequest = async (requestId: string, userId: string) => {
 
   const updatedRequest = await prisma.bloodRequest.update({
     where: {
-      id: requestId,
+      id: requestId, 
     },
     data: {
       status: "VERIFIED",

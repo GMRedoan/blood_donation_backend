@@ -42,6 +42,9 @@ const getMyRequest = async (userId: string) => {
     where: {
       creatorId: userId,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
     include: {
       matches: true,
     },
@@ -65,6 +68,9 @@ const updateRequest = async (
   if (user.isDeleted === true) {
     throw new AppError(400, "User is deleted, please contact support");
   }
+  if(user.status === "BANNED"){
+    throw new AppError(400, "User is banned, please contact support");
+  }
   const request = await prisma.bloodRequest.findUnique({
     where: {
       id: requestId,
@@ -82,6 +88,9 @@ const updateRequest = async (
     },
     data: {
       ...payload,
+      status: "PENDING",
+      verifiedById: null,
+      verifiedAt: null,
     },
   });
   return updatedRequest;
@@ -110,7 +119,7 @@ const deleteRequest = async (requestId: string, userId: string) => {
   if (request.creatorId !== userId) {
     throw new AppError(403, "You are not authorized to delete this request");
   }
-  if(request.status === "VERIFIED" || request.status === "MATCHING") {
+  if(request.status === "VERIFIED") {
     throw new AppError(400, "You cannot delete an approved request");
   }
   await prisma.bloodRequest.delete({
