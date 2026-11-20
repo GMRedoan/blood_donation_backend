@@ -36,6 +36,7 @@ model DonorMatch {
   createdAt   DateTime     @default(now())
   donor       User         @relation("MatchedDonor", fields: [donorId], references: [id])
   request     BloodRequest @relation(fields: [requestId], references: [id])
+  donation    Donation?
 
   @@unique([requestId, donorId])
   @@index([status])
@@ -52,6 +53,8 @@ model Donation {
   deletedAt   DateTime?
   donor       User           @relation("DonationDonor", fields: [donorId], references: [id])
   request     BloodRequest   @relation(fields: [requestId], references: [id])
+  donorMatch  DonorMatch?    @relation(fields: [requestId, donorId], references: [requestId, donorId])
 
+  @@unique([requestId, donorId])
   @@index([status])
 }

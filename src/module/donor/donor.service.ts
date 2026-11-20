@@ -190,20 +190,6 @@ const getMatchingRequests = async (userId: string) => {
       },
     });
     const respondedRequestIds = existingMatches.map((match) => match.requestId);
-    const testRequests = await prisma.bloodRequest.findMany({
-      where: {
-        status: "VERIFIED",
-        bloodGroup: donor.bloodGroup,
-        city: {
-          equals: donor.user.city.trim(),
-          mode: "insensitive",
-        },
-        deletedAt: null,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
     const requests = await prisma.bloodRequest.findMany({
       where: {
         status: "VERIFIED",
@@ -221,7 +207,7 @@ const getMatchingRequests = async (userId: string) => {
         }),
       },
       orderBy: {
-        createdAt: "desc",
+        urgency: "desc",
       },
     });
 
@@ -338,7 +324,23 @@ const myCreateDonation = async (donorId: string) => {
     where: {
       donorId,
     },
-    orderBy: { 
+    include: {
+      request: {
+        select: {
+          patientName: true,
+          hospitalName: true,
+          reason: true,
+        }
+      },
+      donation: {
+        select: {
+          status: true,
+          scheduledAt: true,
+          completedAt: true,
+        }
+      }
+    },
+     orderBy: { 
       createdAt: "desc",
     },
   });

@@ -137,7 +137,13 @@ const acceptMatch = async (
     throw new AppError(403, "You are not authorized to accept this donor");
   }
 
-  if (scheduledAt <= new Date()) {
+  const scheduledDate = new Date(scheduledAt);
+
+  if (Number.isNaN(scheduledDate.getTime())) {
+    throw new AppError(400, "Invalid scheduled date");
+  }
+
+  if (scheduledDate.getTime() <= Date.now()) {
     throw new AppError(400, "Scheduled time must be in the future");
   }
 
