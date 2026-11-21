@@ -181,6 +181,20 @@ const acceptMatch = async (
       },
     });
 
+    await tx.donorMatch.updateMany({
+      where: {
+        requestId: match.requestId,
+        id: {
+          not: matchId,
+        },
+        status: "PENDING",
+      },
+      data: {
+        status: "DECLINED",
+        respondedAt: new Date(),
+      },
+    });
+
     const donation = await tx.donation.create({
       data: {
         requestId: match.requestId,

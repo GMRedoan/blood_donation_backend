@@ -38,17 +38,44 @@ const getMyRequest = async (userId: string) => {
   if (user.isDeleted === true) {
     throw new AppError(400, "User is deleted, please contact support");
   }
-  const requests = await prisma.bloodRequest.findMany({
-    where: {
-      creatorId: userId,
+const requests = await prisma.bloodRequest.findMany({
+  where: {
+    creatorId: userId,
+  },
+  orderBy: {
+    createdAt: "desc",
+  },
+  include: {
+    matches: {
+      select: {
+        id: true,
+        status: true,
+        notifiedAt: true,
+        respondedAt: true,
+        createdAt: true,
+
+        donor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+
+        donation: {
+          select: {
+            id: true,
+            status: true,
+            scheduledAt: true,
+            completedAt: true,
+          },
+        },
+      },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      matches: true,
-    },
-  });
+  },
+});
+  
   return requests;
 };
 
