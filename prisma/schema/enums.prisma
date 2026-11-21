@@ -33,7 +33,7 @@ enum MatchStatus {
   PENDING
   ACCEPTED
   DECLINED
-  EXPIRED
+  COMPLETED
 }
 
 enum DonationStatus {
