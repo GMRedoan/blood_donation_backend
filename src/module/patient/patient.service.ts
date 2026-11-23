@@ -75,7 +75,7 @@ const requests = await prisma.bloodRequest.findMany({
     },
   },
 });
-  
+
   return requests;
 };
 
@@ -146,8 +146,8 @@ const deleteRequest = async (requestId: string, userId: string) => {
   if (request.creatorId !== userId) {
     throw new AppError(403, "You are not authorized to delete this request");
   }
-  if(request.status === "VERIFIED") {
-    throw new AppError(400, "You cannot delete an approved request");
+  if (request.status === "VERIFIED" || request.status === "COMPLETED") {
+    throw new AppError(400, "You can only delete pending requests");
   }
   await prisma.bloodRequest.delete({
     where: {

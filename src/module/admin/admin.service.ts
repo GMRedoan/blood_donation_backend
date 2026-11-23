@@ -1,4 +1,4 @@
-import { CampaignStatus } from "../../../generated/prisma/enums";
+import { CampaignStatus, UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 
@@ -67,11 +67,25 @@ const getAllUsers = async () => {
     select: {
       id: true,
       name: true,
+      city: true,
+      area: true,
       email: true,
+      phone: true,
+      profilePhoto: true,
       role: true,
+      status: true,
       isDeleted: true,
       createdAt: true,
-      updatedAt: true,
+      donorProfile: {
+        select: {
+          bloodGroup: true,
+          isAvailable: true,
+          lastDonationDate: true,
+        }
+      }
+    },
+    where: {
+      isDeleted: false,
     },
   });
 
@@ -140,10 +154,75 @@ const restoreUser = async (userId: string) => {
   return updatedUser;
 };
 
+const updateUserStatus = async (userId: string, status: UserStatus) => {
+  const isExist = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    omit: {
+      password: true,
+    }
+  });
+  if (!isExist) {
+    throw new AppError(404, "user not found");
+  }
+  const isAdmin = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      role: true,
+    },
+  });
+  if (isAdmin?.role === "ADMIN") {
+    throw new AppError(404, "cannot update admin status");
+  }
+
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      status,
+    },
+  });
+  return user;
+};
+
+const getDeletedUsers = async () => {
+  const users = await prisma.user.findMany({
+    where: {
+      isDeleted: true,
+    },
+    omit: {
+      password: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return users;
+};
+
+const getPendingRequests = async () => {
+  const users = await prisma.bloodRequest.findMany({
+    where: {
+      status: "PENDING",
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return users;
+};
+
 export const adminService = {
   verifyRequest,
   verifyCampaign,
-  getAllUsers, 
+  getAllUsers,
   softDeleteUser,
-  restoreUser
+  restoreUser,
+  updateUserStatus,
+  getDeletedUsers,
+  getPendingRequests,
 };

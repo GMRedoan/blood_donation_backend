@@ -25,4 +25,20 @@ router.patch("/user/:id/restore",
     auth(Role.ADMIN),
     adminController.restoreUser);
 
+router.patch("/user/:id/status",
+    auth(Role.ADMIN),
+    adminController.updateUserStatus
+)
+
+router.get("/deletedUser",
+    auth(Role.ADMIN),
+    adminController.getDeletedUsers
+)
+
+router.get(
+  "/pendingRequests",
+  auth(Role.ADMIN),
+  adminController.getPendingRequests,
+);
+
 export const adminRouter = router;

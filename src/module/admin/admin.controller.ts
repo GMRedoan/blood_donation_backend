@@ -62,10 +62,45 @@ const restoreUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const status = req.body.status;
+  const user = await adminService.updateUserStatus(userId as string, status);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User status updated successfully",
+    data: {user},
+  });
+});
+
+const getDeletedUsers = catchAsync(async (req: Request, res: Response) => {
+  const users = await adminService.getDeletedUsers();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Deleted users fetched successfully",
+    data: users,
+  });
+});
+
+const getPendingRequests = catchAsync(async (req: Request, res: Response) => {
+  const users = await adminService.getPendingRequests();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Pending users fetched successfully",
+    data: users,
+  });
+});
+
 export const adminController = {
   verifyRequest,
   verifyCampaign,
   getAllUsers,
   softDeleteUser,
-  restoreUser
+  restoreUser,
+  updateUserStatus,
+  getDeletedUsers,
+  getPendingRequests,
 };

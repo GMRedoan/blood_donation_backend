@@ -276,6 +276,27 @@ const completeDonation = async (donationId: string) => {
       },
     });
 
+    await tx.donorMatch.update({
+      where: {
+        requestId_donorId: {
+          requestId: currentDonation.requestId,
+          donorId: currentDonation.donorId,
+        },
+      },
+      data: {
+        status: "COMPLETED",
+      },
+    });
+
+    await tx.bloodRequest.update({
+      where: {
+        id: currentDonation.requestId,
+      },
+      data: {
+        status: "COMPLETED",
+      },
+    });
+
     const updatedDonorProfile = await tx.donorProfile.update({
       where: {
         userId: donation.donorId,

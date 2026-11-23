@@ -24,7 +24,7 @@ enum BloodGroup {
 enum RequestStatus {
   PENDING
   VERIFIED
-  FULFILLED
+  COMPLETED
   CANCELLED
   EXPIRED
 }
