@@ -1,3 +1,4 @@
+import { ca } from "zod/locales";
 import { CampaignStatus, UserStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
@@ -44,10 +45,6 @@ const verifyCampaign = async (campaignId: string, status: CampaignStatus) => {
 
   if (campaign.deletedAt) {
     throw new AppError(400, "Campaign has been deleted");
-  }
-
-  if (campaign.status !== "PENDING") {
-    throw new AppError(400, "Only pending campaigns can be approved");
   }
 
   const updatedCampaign = await prisma.campaign.update({
@@ -208,6 +205,15 @@ const getPendingRequests = async () => {
   const users = await prisma.bloodRequest.findMany({
     where: {
       status: "PENDING",
+    },
+    include: {
+      creator: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        },
+      }
     },
     orderBy: {
       createdAt: "desc",

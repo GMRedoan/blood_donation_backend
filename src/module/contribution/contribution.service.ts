@@ -9,6 +9,7 @@ const createContribution = async (
   campaignId: string,
   amount: number,
   userId: string,
+  userRole: string
 ) => {
   const campaign = await prisma.campaign.findUnique({
     where: {
@@ -76,7 +77,7 @@ const createContribution = async (
         quantity: 1,
       },
     ],
-    success_url: `${config.app_url}/campaign?success=true`,
+    success_url: `${config.app_url}/dashboard/${userRole.toLocaleLowerCase()}/ContributionHistory`,
     cancel_url: `${config.app_url}/campaign?success=false`,
     metadata: {
       contributionId: payment.id,

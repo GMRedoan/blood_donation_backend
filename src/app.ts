@@ -13,7 +13,10 @@ import { contributionRouter } from "./module/contribution/contribution.route";
 import { contributionController } from "./module/contribution/contribution.controller";
 
 const app: Application = express();
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://blood-bridge-two-mauve.vercel.app",
+];
 app.use(
   cors({
     origin: allowedOrigins,

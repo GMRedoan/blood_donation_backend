@@ -65,10 +65,21 @@ const getCampaignContributionHistory = catchAsync(async (req: Request, res: Resp
   });
 })
 
+const getPendingCampaigns = catchAsync(async (req: Request, res: Response) => {
+  const campaigns = await campaignService.getPendingCampaigns();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Campaigns fetched successfully",
+    data: campaigns,
+  });
+});
+
 export const campaignController = {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
   getMyCampaign,
-  getCampaignContributionHistory
+  getCampaignContributionHistory,
+  getPendingCampaigns,
 };

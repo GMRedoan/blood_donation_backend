@@ -46,6 +46,15 @@ const getAllCampaigns = async () => {
       status: "ACTIVE",
       deletedAt: null,
     },
+    include: {
+      createdBy: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        }
+      }
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -122,10 +131,34 @@ const getCampaignContributionHistory = async (campaignId: string, userId: string
   return contributions;
 }
 
+const getPendingCampaigns = async () => {
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      status: { in: ["PENDING", "CANCELLED"] },
+      deletedAt: null,
+    },
+    include: {
+      createdBy: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        }
+      }
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return campaigns;
+};
+
 export const campaignService = {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
   getMyCampaign,
-  getCampaignContributionHistory
+  getCampaignContributionHistory,
+  getPendingCampaigns
 };

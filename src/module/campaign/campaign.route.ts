@@ -13,7 +13,6 @@ router.post("/",
      campaignController.createCampaign);
 
 router.get("/",
-    auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),
     campaignController.getAllCampaigns);
     
 router.get("/myCampaign",
@@ -25,6 +24,10 @@ router.get("/contribution/history/:id",
     campaignController.getCampaignContributionHistory
 )
 
+router.get("/pendingCampaigns",
+    auth(Role.ADMIN),
+    campaignController.getPendingCampaigns);
+ 
 router.get(
   "/:id",
   auth(Role.ADMIN, Role.HOSPITAL, Role.DONOR, Role.PATIENT),

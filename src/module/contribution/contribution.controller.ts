@@ -7,10 +7,12 @@ import { contributionService } from "./contribution.service";
 const createContribution = catchAsync(async (req: Request, res: Response) => {
   const { campaignId, amount } = req.body;
   const userId = req.user?.id;
+  const userRole = req.user?.role;
   const contribution = await contributionService.createContribution(
     campaignId,
     amount,
     userId as string,
+    userRole 
   );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -33,23 +35,23 @@ const confirmContribution = catchAsync(async (req: Request, res: Response) => {
 });
 
 const contributionHistory = catchAsync(async (req: Request, res: Response) => {
-  const contributions = await contributionService.contributionHistory();
+  const result = await contributionService.contributionHistory();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "contribution history fetched successfully",
-    data: { contributions },
+    data: result,
   });
 });
 
 const myContributionHistory = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
-  const contributions = await contributionService.myContributionHistory(userId as string);
+  const result = await contributionService.myContributionHistory(userId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "contribution history fetched successfully",
-    data: { contributions },
+    data: result,
   });
 })
 
